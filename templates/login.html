@@ -1,0 +1,12 @@
+<!doctype html>
+<title>Login</title>
+<h2>Login</h2>
+<form method="post">
+  <label>Username <input name="username"></label><br>
+  <label>Password <input type="password" name="password"></label><br>
+  <button type="submit">Log In</button>
+</form>
+<p>Need an account? <a href="{{ url_for('register') }}">Register here</a>.</p>
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% for cat,msg in messages %}<p class="{{cat}}">{{msg}}</p>{% endfor %}
+{% endwith %} 

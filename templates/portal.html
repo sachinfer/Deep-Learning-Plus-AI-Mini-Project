@@ -1,0 +1,104 @@
+<!doctype html>
+<title>Portal</title>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+<h2>Welcome, {{username}}</h2>
+<a href="{{ url_for('logout') }}">Log out</a>
+
+<h3>Your branches: {{ branches|join(', ') }}</h3>
+
+<form method="post">
+  <label>Forecast Start Date <input type="date" name="date" required></label>
+  <label>Horizon (days) 
+    <select name="horizon">
+      {% for i in range(1,31) %}<option>{{i}}</option>{% endfor %}
+    </select>
+  </label>
+  <button type="submit">Get Forecast</button>
+</form>
+
+{% if forecasts %}
+  <h3>Forecast Results</h3>
+  <table border="1">
+    <tr><th>Date</th><th>Branch</th><th>Forecast</th></tr>
+    {% for row in forecasts %}
+      <tr>
+        <td>{{ row.date }}</td>
+        <td>{{ row.branch }}</td>
+        <td>{{ row.forecast }}</td>
+      </tr>
+    {% endfor %}
+  </table>
+{% endif %}
+
+<hr>
+
+<h2>Interactive EDA</h2>
+<form method="post">
+    <h3>Filters</h3>
+    <label>Select product groups for EDA:
+        <select name="eda_groups" multiple>
+            {% for b in [1,2,3,4,5,6] %}
+                <option value="{{ b }}" {% if b in eda_groups_default %}selected{% endif %}>Branch {{ b }}</option>
+            {% endfor %}
+        </select>
+    </label><br>
+    <label>Date range:
+        <input type="date" name="start_eda" value="{{ start_eda_default }}">
+        <input type="date" name="end_eda" value="{{ end_eda_default }}">
+    </label><br>
+    <label>Choose seasonal period (days):
+        <input type="number" name="period" value="30" min="7" max="365">
+    </label><br>
+    <button type="submit">Apply EDA Filters</button>
+</form>
+
+{% if fig_ts_json %}
+    <h3>Daily Sales Time Series</h3>
+    <div id="dailySalesTimeSeries" style="display: none;" data-figure="{{ fig_ts_json | tojson }}"></div>
+    <script>
+        var plotDiv = document.getElementById('dailySalesTimeSeries');
+        var fig_ts = JSON.parse(plotDiv.getAttribute('data-figure'));
+        Plotly.newPlot('dailySalesTimeSeries', fig_ts.data, fig_ts.layout);
+    </script>
+{% endif %}
+
+{% if fig_trend_json %}
+    <h3>Seasonal Decomposition - Trend</h3>
+    <div id="seasonalTrend" style="display: none;" data-figure="{{ fig_trend_json | tojson }}"></div>
+    <script>
+        var plotDiv = document.getElementById('seasonalTrend');
+        var fig_trend = JSON.parse(plotDiv.getAttribute('data-figure'));
+        Plotly.newPlot('seasonalTrend', fig_trend.data, fig_trend.layout);
+    </script>
+{% endif %}
+
+{% if fig_seas_json %}
+    <h3>Seasonal Decomposition - Seasonal</h3>
+    <div id="seasonalSeasonal" style="display: none;" data-figure="{{ fig_seas_json | tojson }}"></div>
+    <script>
+        var plotDiv = document.getElementById('seasonalSeasonal');
+        var fig_seas = JSON.parse(plotDiv.getAttribute('data-figure'));
+        Plotly.newPlot('seasonalSeasonal', fig_seas.data, fig_seas.layout);
+    </script>
+{% endif %}
+
+{% if fig_resid_json %}
+    <h3>Seasonal Decomposition - Residual</h3>
+    <div id="seasonalResidual" style="display: none;" data-figure="{{ fig_resid_json | tojson }}"></div>
+    <script>
+        var plotDiv = document.getElementById('seasonalResidual');
+        var fig_resid = JSON.parse(plotDiv.getAttribute('data-figure'));
+        Plotly.newPlot('seasonalResidual', fig_resid.data, fig_resid.layout);
+    </script>
+{% endif %}
+
+{% if fig_heat_json %}
+    <h3>Heatmap: Avg Sales by Day of Week & Month</h3>
+    <div id="heatmap" style="display: none;" data-figure="{{ fig_heat_json | tojson }}"></div>
+    <script>
+        var plotDiv = document.getElementById('heatmap');
+        var fig_heat = JSON.parse(plotDiv.getAttribute('data-figure'));
+        Plotly.newPlot('heatmap', fig_heat.data, fig_heat.layout);
+    </script>
+{% endif %} 

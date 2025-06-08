@@ -1,10 +1,12 @@
+Flask
+Flask-Login
+Werkzeug
 pandas
 numpy
 holidays
 lightgbm
 scikit-learn
 joblib
-Flask
 streamlit
 requests
 plotly
