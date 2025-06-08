@@ -4,3 +4,6 @@ holidays
 lightgbm
 scikit-learn
 joblib
+Flask
+streamlit
+requests
