@@ -1,6 +1,0 @@
-pandas
-numpy
-holidays
-lightgbm
-scikit-learn
-joblib
