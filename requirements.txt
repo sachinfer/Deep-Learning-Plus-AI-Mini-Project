@@ -1,10 +1,9 @@
+Flask
 pandas
-numpy
+joblib
 holidays
 lightgbm
 scikit-learn
-joblib
-Flask
 streamlit
 requests
 plotly

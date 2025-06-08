@@ -1,0 +1,8 @@
+version: '3.8'
+services:
+  bakery-app:
+    build: .
+    ports:
+      - "5000:5000"   # Flask API
+      - "8501:8501"   # Streamlit dashboard
+    restart: unless-stopped 

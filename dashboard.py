@@ -7,7 +7,7 @@ import pandas as pd
 import plotly.express as px
 from statsmodels.tsa.seasonal import seasonal_decompose
 
-API_URL = "http://localhost:5000"
+API_URL = "http://bakery-app:5000"
 
 st.title("📦 Bakery Sales Forecast & EDA")
 
@@ -44,6 +44,24 @@ if st.button("Get Forecast"):
     st.subheader("Forecast Plot")
     chart = df_fc.pivot(index='Date', columns='Group', values='Forecast')
     st.line_chart(chart)
+
+# --- Batch forecasting via CSV upload ---
+st.header("Batch Forecast from CSV")
+st.markdown("Upload a CSV with **`date`** and **`product_group`** columns.")
+csv_file = st.file_uploader("CSV file", type=["csv"])
+if csv_file is not None:
+    files = {"file": csv_file}
+    resp = requests.post(f"{API_URL}/batch_predict", files=files)
+    if resp.status_code == 200:
+        st.success("Batch forecasting complete!")
+        st.download_button(
+            "Download forecasts CSV",
+            data=resp.content,
+            file_name="batch_forecasts.csv",
+            mime="text/csv"
+        )
+    else:
+        st.error(f"Error: {resp.text}")
 
 # --- EDA Section ---
 st.header("2️⃣ Interactive EDA")
@@ -153,22 +171,4 @@ fig_heat = px.imshow(
     labels={'x':'Month','y':'Day','color':'Avg Sales'},
     aspect='auto'
 )
-st.plotly_chart(fig_heat, use_container_width=True)
-
-# --- Batch forecasting via CSV upload ---
-st.header("Batch Forecast from CSV")
-st.markdown("Upload a CSV with **`date`** and **`product_group`** columns.")
-csv_file = st.file_uploader("CSV file", type=["csv"])
-if csv_file is not None:
-    files = {"file": csv_file}
-    resp = requests.post(f"{API_URL}/batch_predict", files=files)
-    if resp.status_code == 200:
-        st.success("Batch forecasting complete!")
-        st.download_button(
-            "Download forecasts CSV",
-            data=resp.content,
-            file_name="batch_forecasts.csv",
-            mime="text/csv"
-        )
-    else:
-        st.error(f"Error: {resp.text}") 
+st.plotly_chart(fig_heat, use_container_width=True) 
